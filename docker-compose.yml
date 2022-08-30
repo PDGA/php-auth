@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  php:
+    image: php:8.1-cli-alpine
+    volumes:
+      - ./:/var/auth
+    working_dir: /var/auth
+
+  composer:
+    command: -V
+    image: composer:2.4
+    volumes:
+      - ./:/var/auth
+    working_dir: /var/auth
+
