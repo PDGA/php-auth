@@ -52,6 +52,17 @@ abstract class TokenIssuer
     abstract public function verifyAudience(array $audience): bool;
 
     /**
+     * Expose the issuer, which is often one of the audiences in concrete
+     * implementations.
+     *
+     * @return string The "iss" (issuer) claim on tokens.
+     */
+    public function getIssuer(): string
+    {
+        return $this->issuer;
+    }
+
+    /**
      * Issue a token for a subject (e.g. a user/device/service identifier).
      *
      * @param string $subject - A unique identifier for the subject.

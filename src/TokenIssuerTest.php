@@ -143,4 +143,12 @@ final class TokenIssuerTest extends TestCase
             $this->assertSame('Invalid audience.', $ex->getMessage());
         }
     }
+
+    /**
+     * Pulls the issuer.
+     */
+    public function testGetIssuer(): void
+    {
+        $this->assertSame('test-issuer', $this->token_issuer->getIssuer());
+    }
 }
