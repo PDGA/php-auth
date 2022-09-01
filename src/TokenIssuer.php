@@ -20,7 +20,6 @@ abstract class TokenIssuer
      *
      * @param string $issuer - Application name.  Lands in the "iss"
      * claim of issued tokens.
-     * APP_URL environment variable value.
      * @param string $key - Signing key for tokens.  Used for generating signed
      * HMACs.
      */
