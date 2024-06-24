@@ -1,0 +1,27 @@
+name: Run Quality Checks
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "*" ]
+
+jobs:
+  quality-checks:
+    name: quality-checks
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout the code
+      - uses: actions/checkout@v4
+
+      # Install composer dependencies
+      - name: Install Composer Dependencies
+        run: ./bin/composer install
+
+      # Run tests
+      - name: Run Unit Tests
+        run: ./bin/phpunit
+
+      # Run PHP_CodeSniffer
+      - name: Run PHP_CodeSniffer
+        run: composer sniff
