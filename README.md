@@ -5,7 +5,7 @@ Auth related code for the PDGA's back-end PHP systems.
 ### Install Composer Deps
 
 ```
-docker-compose run --rm -u $(id -u):$(id -g) composer install
+./bin/composer install
 ```
 
 ### Run Unit Tests
