@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]] ; then
+    echo 'This file supports composer commands, it should not be run directly.'
+    exit 0
+fi
+
+docker compose run --rm -u $(id -u):$(id -g) php ./vendor/bin/$1 --standard=./vendor/pdga/coding-standards/src/ruleset.xml ./src $2
