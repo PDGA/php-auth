@@ -6,7 +6,8 @@ use PDGA\Exception\UnauthorizedException;
 
 use PDGA\Auth\TokenIssuer;
 
-class TestTokenIssuer extends TokenIssuer {
+class TestTokenIssuer extends TokenIssuer
+{
     public function __construct()
     {
         parent::__construct('test-issuer', 'test-key');
@@ -67,13 +68,10 @@ final class TokenIssuerTest extends TestCase
         // part of the JWT).
         $token = substr_replace($token, 'A', strlen($token) - 1);
 
-        try
-        {
+        try {
             $payload = $this->token_issuer->decode($token);
             $this->assertTrue(false);
-        }
-        catch (ForbiddenException $ex)
-        {
+        } catch (ForbiddenException $ex) {
             $this->assertSame('Invalid signature.', $ex->getMessage());
         }
     }
@@ -86,13 +84,10 @@ final class TokenIssuerTest extends TestCase
         // Token valid for -1 seconds.
         $token = $this->token_issuer->issueTokenFor('1', -1);
 
-        try
-        {
+        try {
             $payload = $this->token_issuer->decode($token);
             $this->assertTrue(false);
-        }
-        catch (UnauthorizedException $ex)
-        {
+        } catch (UnauthorizedException $ex) {
             $this->assertSame('Token expired.', $ex->getMessage());
         }
     }
@@ -104,13 +99,10 @@ final class TokenIssuerTest extends TestCase
     {
         $token = 'asdf';
 
-        try
-        {
+        try {
             $payload = $this->token_issuer->decode($token);
             $this->assertTrue(false);
-        }
-        catch (ForbiddenException $ex)
-        {
+        } catch (ForbiddenException $ex) {
             $this->assertSame('Invalid token.', $ex->getMessage());
         }
     }
@@ -133,13 +125,10 @@ final class TokenIssuerTest extends TestCase
 
         $token = $token_issuer->issueTokenFor('1', 60);
 
-        try
-        {
+        try {
             $payload = $token_issuer->decode($token);
             $this->assertTrue(false);
-        }
-        catch (ForbiddenException $ex)
-        {
+        } catch (ForbiddenException $ex) {
             $this->assertSame('Invalid audience.', $ex->getMessage());
         }
     }
