@@ -11,7 +11,7 @@ Auth related code for the PDGA's back-end PHP systems.
 ### Run Unit Tests
 
 ```
-./run-tests.sh
+./bin/phpunit
 ```
 
 ### Require this Library as a Dependency
