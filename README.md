@@ -20,17 +20,14 @@ Auth related code for the PDGA's back-end PHP systems.
 composer require pdga/auth
 ```
 
-### Code Formatting Standards
+## Code Formatting Standards
 #### Run PHP_CodeSniffer to see the existing styling issues.
+- [CLI Reference](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage#getting-help-from-the-command-line)
 ```
-composer sniff
+./bin/codesniffer
 ```
-
 #### Run the formatter to automatically fix the styling issues that can be fixed.
+- [CLI Reference](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Fixing-Errors-Automatically#using-the-php-code-beautifier-and-fixer)
 ```
-composer format
-```
-or
-```
-composer format-verbose
+./bin/codeformatter
 ```

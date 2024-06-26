@@ -13,3 +13,9 @@ services:
       - ./:/var/auth
     working_dir: /var/auth
 
+  codesniffer:
+    image: php:7.4-cli-alpine3.16
+    volumes:
+      - ./:/var/pdga
+    working_dir: /var/pdga
+
