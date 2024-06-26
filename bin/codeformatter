@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker compose run --rm -u $(id -u):$(id -g) codesniffer ./vendor/bin/phpcbf --standard=./vendor/pdga/coding-standards/src/ruleset.xml ./src $1

@@ -26,8 +26,7 @@ abstract class TokenIssuer
     public function __construct(
         string $issuer,
         string $key
-    )
-    {
+    ) {
         $this->issuer = $issuer;
         $this->key    = $key;
     }
@@ -79,8 +78,7 @@ abstract class TokenIssuer
         string $subject,
         int $duration,
         array $additional_claims = []
-    ): string
-    {
+    ): string {
         $now = time();
 
         $payload = [
@@ -112,33 +110,24 @@ abstract class TokenIssuer
      */
     public function decode(
         string $token
-    ): array
-    {
+    ): array {
         $key = new Key($this->key, 'HS256');
 
         // Decode the token, which checks the signature and that it has not
         // expired.
-        try
-        {
+        try {
             $payload = (array)JWT::decode($token, $key);
-        }
-        catch (SignatureInvalidException $e)
-        {
+        } catch (SignatureInvalidException $e) {
             throw new ForbiddenException('Invalid signature.');
-        }
-        catch (ExpiredException $e)
-        {
+        } catch (ExpiredException $e) {
             throw new UnauthorizedException('Token expired.');
-        }
-        catch (\UnexpectedValueException $e)
-        {
+        } catch (\UnexpectedValueException $e) {
             throw new ForbiddenException('Invalid token.');
         }
 
         // Make sure that the audience is valid for use with the concrete
         // application.
-        if (!$this->verifyAudience($payload['aud']))
-        {
+        if (!$this->verifyAudience($payload['aud'])) {
             throw new ForbiddenException('Invalid audience.');
         }
 
