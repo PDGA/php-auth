@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   php:
-    image: php:8.1-cli-alpine
+    image: php:8.3-cli-alpine
     volumes:
       - ./:/var/auth
     working_dir: /var/auth
@@ -14,7 +13,7 @@ services:
     working_dir: /var/auth
 
   codesniffer:
-    image: php:7.4-cli-alpine3.16
+    image: php:8.3-cli-alpine
     volumes:
       - ./:/var/pdga
     working_dir: /var/pdga
