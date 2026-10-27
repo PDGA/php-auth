@@ -22,7 +22,7 @@
     "require": {
         "php": "^8.3",
         "pdga/exception": "^1.0",
-        "firebase/php-jwt": "^6.0"
+        "firebase/php-jwt": "^7.0"
     },
     "autoload": {
         "psr-4": {
