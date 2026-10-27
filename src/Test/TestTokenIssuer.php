@@ -8,7 +8,7 @@ class TestTokenIssuer extends TokenIssuer
 {
     public function __construct()
     {
-        parent::__construct('test-issuer', 'test-key');
+        parent::__construct('test-issuer', '12345678901234567890123456789012');
     }
 
     public function getAudience(): array
