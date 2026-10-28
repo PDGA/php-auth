@@ -7,7 +7,7 @@ services:
 
   composer:
     command: -V
-    image: composer:2.4
+    image: composer:2.7
     volumes:
       - ./:/var/auth
     working_dir: /var/auth
