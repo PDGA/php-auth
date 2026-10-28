@@ -46,13 +46,19 @@ final class TokenIssuerTest extends TestCase
     public function testBadSig(): void
     {
         $token = $this->token_issuer->issueTokenFor('1', 60);
-        // Changes the last character of the token to an A (the sig is the last
-        // part of the JWT).
-        $token = substr_replace($token, 'A', strlen($token) - 1);
+
+        // The signature is the third segment of the JWT.
+        // Change the first character of the signature segment. Its bits are fully significant.
+        // That is unlike the last character, whose low bits are padding.
+        $parts = explode('.', $token);
+        $signature = $parts[2];
+        $signature[0] = $signature[0] === 'A' ? 'B' : 'A';
+        $parts[2] = $signature;
+        $token = implode('.', $parts);
 
         try {
             $payload = $this->token_issuer->decode($token);
-            $this->assertTrue(false);
+            $this->fail('Expected ForbiddenException not thrown: ' . $token);
         } catch (ForbiddenException $ex) {
             $this->assertSame('Invalid signature.', $ex->getMessage());
         }
