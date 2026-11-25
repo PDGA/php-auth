@@ -13,23 +13,27 @@ use Firebase\JWT\SignatureInvalidException;
 abstract class TokenIssuer
 {
     private $key;
+    private $additional_verification_keys;
     private $issuer;
 
     /**
      * Initialize with an issuer (application name) and a signing key.
      *
-     * @param string $issuer - Application name.  Lands in the "iss"
-     * claim of issued tokens.
+     * @param string $issuer - Application name. Lands in the "iss" claim of issued tokens.
      * @param string $key - Signing key for tokens.  Used for generating signed
-     * HMACs.
+     * HMACs, and is the first key tried when verifying tokens.
+     * @param array $additional_verification_keys - Optional list of extra keys
+     * that are accepted when verifying tokens, but never used for signing.
+     * Tokens signed with a previous (or upcoming) key remain valid while the rotation rolls out.
      */
     public function __construct(
         string $issuer,
-        string $key
-    )
-    {
+        string $key,
+        array $additional_verification_keys = []
+    ) {
         $this->issuer = $issuer;
-        $this->key    = $key;
+        $this->key = $key;
+        $this->additional_verification_keys = $additional_verification_keys;
     }
 
     /**
@@ -73,7 +77,7 @@ abstract class TokenIssuer
      * @param array $additional_claims - An array of additional
      * claims to add to the token payload.
      *
-     * @return A signed JSON web token, as a string.
+     * @return string - A signed JSON web token, as a string.
      */
     public function issueTokenFor(
         string $subject,
@@ -98,11 +102,13 @@ abstract class TokenIssuer
 
     /**
      * Decode (and verify) the token, then return its payload (claims) as an
-     * array.
+     * array.  The signature is checked against the signing key first, then
+     * against each additional verification key, in order.
      *
      * @param string $token - A JWT.
      *
-     * @throws ForbiddenException if the token has a bad signature.
+     * @throws ForbiddenException if the token's signature does not match any
+     * of the configured keys.
      * @throws ForbiddenException if the token's format is invalid (not a JWT).
      * @throws ForbiddenException if the token's audience does not contain the
      * audience returned from the abstract getAudience method.
@@ -114,29 +120,40 @@ abstract class TokenIssuer
         string $token
     ): array
     {
-        $key = new Key($this->key, 'HS256');
+        $payload = null;
+        $keys = array_merge([$this->key], $this->additional_verification_keys);
 
-        // Decode the token, which checks the signature and that it has not
-        // expired.
-        try
+        // Decode the token, which checks the signature and that it has not expired.
+        // Order is important here. The signature is checked before the expiration.
+        // A token must be successfully decoded before the expiration can be checked.
+        foreach ($keys as $key)
         {
-            $payload = (array)JWT::decode($token, $key);
+            try
+            {
+                $payload = (array)JWT::decode($token, new Key($key, 'HS256'));
+                break;
+            }
+            catch (SignatureInvalidException $e)
+            {
+                continue;
+            }
+            catch (ExpiredException $e)
+            {
+                throw new UnauthorizedException('Token expired.');
+            }
+            catch (\UnexpectedValueException $e)
+            {
+                throw new ForbiddenException('Invalid token.');
+            }
         }
-        catch (SignatureInvalidException $e)
+
+        // The token could not be decoded.
+        if ($payload === null)
         {
             throw new ForbiddenException('Invalid signature.');
         }
-        catch (ExpiredException $e)
-        {
-            throw new UnauthorizedException('Token expired.');
-        }
-        catch (\UnexpectedValueException $e)
-        {
-            throw new ForbiddenException('Invalid token.');
-        }
 
-        // Make sure that the audience is valid for use with the concrete
-        // application.
+        // Make sure that the audience is valid for use with the concrete application.
         if (!$this->verifyAudience($payload['aud']))
         {
             throw new ForbiddenException('Invalid audience.');
